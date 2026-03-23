@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Love Calculator ❤️</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #ff758c, #ff7eb3);
+    color: white;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.container {
+    text-align: center;
+    margin: auto;
+    padding: 20px;
+}
+
+input {
+    padding: 10px;
+    margin: 8px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    width: 200px;
+    max-width: 80%;
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    background: red;
+    color: white;
+    cursor: pointer;
+    margin: 5px;
+}
+
+button:hover {
+    background: darkred;
+}
+
+h2 {
+    margin-top: 20px;
+    white-space: pre-line;
+    transition: 0.3s;
+}
+
+.high { color: #00ffcc; }
+.mid { color: #fff176; }
+.low { color: #ffcccb; }
+
+.history {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+@media (max-width: 500px) {
+    h1 { font-size: 22px; }
+    input { width: 90%; }
+    button { width: 90%; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>❤️ Love Calculator ❤️</h1>
+
+    <input id="name1" placeholder="Your Name">
+    <input id="name2" placeholder="Crush Name">
+
+    <br>
+
+    <button id="calcBtn">Check Love 💘</button>
+    <button id="copyBtn">Copy Result 📋</button>
+
+    <h2 id="result"></h2>
+
+    <div class="history" id="history"></div>
+</div>
+
+<div class="footer">Made by Himanshu</div>
+
+<script>
+const name1Input = document.getElementById("name1");
+const name2Input = document.getElementById("name2");
+const result = document.getElementById("result");
+const historyBox = document.getElementById("history");
+const button = document.getElementById("calcBtn");
+const copyBtn = document.getElementById("copyBtn");
+
+function isValidName(name) {
+    return /^[a-zA-Z]+$/.test(name);
+}
+
+function calculateLove(name1, name2) {
+    const combined = (name1 + name2).toLowerCase();
+    let trueCount = 0;
+    let loveCount = 0;
+
+    for (let char of combined) {
+        if ("true".includes(char)) trueCount++;
+        if ("love".includes(char)) loveCount++;
+    }
+
+    let score = parseInt(`${trueCount}${loveCount}`) || 0;
+    return score > 100 ? score % 100 : score;
+}
+
+function getMessage(score) {
+    if (score > 80) return { text: "🔥 Soulmates!", class: "high" };
+    if (score > 50) return { text: "😊 Good Match!", class: "mid" };
+    return { text: "😅 Try Again!", class: "low" };
+}
+
+function saveHistory(text) {
+    let history = JSON.parse(localStorage.getItem("loveHistory")) || [];
+    history.unshift(text);
+    history = history.slice(0, 5);
+    localStorage.setItem("loveHistory", JSON.stringify(history));
+    displayHistory();
+}
+
+function displayHistory() {
+    let history = JSON.parse(localStorage.getItem("loveHistory")) || [];
+    historyBox.innerHTML = "<b>Recent Results:</b><br>" + history.join("<br>");
+}
+
+function handleCalculation() {
+    const name1 = name1Input.value.trim();
+    const name2 = name2Input.value.trim();
+
+    if (!name1 || !name2) {
+        result.innerText = "⚠️ Enter both names!";
+        return;
+    }
+
+    if (!isValidName(name1) || !isValidName(name2)) {
+        result.innerText = "❌ Only letters allowed!";
+        return;
+    }
+
+    result.innerText = "⏳ Calculating...";
+    result.className = "";
+
+    setTimeout(() => {
+        const score = calculateLove(name1, name2);
+        const { text, class: cls } = getMessage(score);
+
+        const finalText = `${name1} ❤️ ${name2} = ${score}%\n${text}`;
+
+        result.innerText = finalText;
+        result.className = cls;
+
+        saveHistory(finalText);
+    }, 700);
+}
+
+button.addEventListener("click", handleCalculation);
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleCalculation();
+});
+
+copyBtn.addEventListener("click", () => {
+    if (!result.innerText || result.innerText.includes("Calculating")) return;
+    navigator.clipboard.writeText(result.innerText);
+    alert("Copied! 😎");
+});
+
+displayHistory();
+</script>
+
+</body>
+</html>
