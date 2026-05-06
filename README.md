@@ -7,11 +7,6 @@ This project calculates a random love compatibility percentage between two peopl
 
 ---
 
-## 📸 Preview
-
-![Love Calculator Preview](preview.png)
-
----
 
 ## ✨ Features
 
